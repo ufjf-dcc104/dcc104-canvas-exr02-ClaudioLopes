@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Space Shooter</title>
+    <script src="Sprite.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+    var eCanvas = document.getElementsByTagName("canvas")[0];
+    var ctx = eCanvas.getContext("2d");
+
+    var actor = new Sprite();
+    var enemy = new Sprite();
+
+    enemy.y = 0;
+
+    var fps = 120;
+    var dt = - 1/fps;
+
+    var feel = 250;
+    var life = 3;
+
+    eCanvas.width = 1000;
+    eCanvas.height = 500;
+
+    desenha();
+
+    function desenha(){
+      requestAnimationFrame(desenha);
+      ctx.clearRect(0,0,eCanvas.width,eCanvas.height);
+      ctx.strokeRect(0,0,eCanvas.width,eCanvas.height);
+
+      actor.desenhar(ctx);
+      actor.mover(dt);
+
+      enemy.desenhar(ctx);
+      enemy.moverEnemy(dt);
+      }
+
+    addEventListener("keydown", function(e){
+      switch (e.keyCode) {
+        case 37:
+            actor.ax = -60;
+          break;
+        case 39:
+            actor.ax = 60;
+          break;
+        default:
+      }
+    });
+
+    addEventListener("keyup", function(e){
+      switch (e.keyCode) {
+        case 37:
+          actor.ax = 0;
+          break;
+        case 37:
+          actor.ax = 0;
+          break;
+        default:
+      }
+    });
+    </script>
+  </body>
+</html>

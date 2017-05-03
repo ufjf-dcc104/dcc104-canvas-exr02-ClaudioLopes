@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>Space Shooter</title>
+    <script src="ImageLoader.js" charset="utf-8"></script>
+    <script src="AudioLoader.js" charset="utf-8"></script>
     <script src="Sprite.js" charset="utf-8"></script>
+    <script src="Level.js" charset="utf-8"></script>
   </head>
   <body>
     <canvas></canvas>
@@ -12,9 +15,17 @@
     var ctx = eCanvas.getContext("2d");
 
     var actor = new Sprite();
-    var enemy = new Sprite();
+    var enemy = new Level();
+    var il = new ImageLoader();
+    var al = new AudioLoader();
 
-    enemy.y = 0;
+
+    il.load("shot", "images/shot.png");
+    al.load("shot", "audios/Missle_Launch-Kibblesbob-2118796725.mp3");
+    al.load("boom", "audios/Grenade-SoundBible.com-1777900486.mp3");
+
+    enemy.imageLib = il;
+    enemy.init();
 
     var fps = 120;
     var dt = - 1/fps;
@@ -25,6 +36,7 @@
     eCanvas.width = 1000;
     eCanvas.height = 500;
 
+
     desenha();
 
     function desenha(){
@@ -32,20 +44,54 @@
       ctx.clearRect(0,0,eCanvas.width,eCanvas.height);
       ctx.strokeRect(0,0,eCanvas.width,eCanvas.height);
 
+      ctx.fillStyle = "black";
+      ctx.fillText("vidas:"+life,450,20);
+
       actor.desenhar(ctx);
       actor.mover(dt);
 
-      enemy.desenhar(ctx);
-      enemy.moverEnemy(dt);
+      enemy.desenha(ctx);
+      enemy.mover(dt);
+      enemy.desenharImg(ctx);
+      enemy.colidiuComTiros(al,"boom");
+
+      for(var i = 0; i < enemy.sprites.length; i++){
+        if(enemy.sprites[i].y >= 500){
+          var r = Math.random()*1000;
+          enemy.sprites[i].y = 0;
+          enemy.sprites[i].x = r;
+          enemy.desenha(ctx);
+        }
       }
+
+      enemy.colidiuCom(actor,
+          function(inimigo, alvo){
+            var r = Math.random()*1000;
+            inimigo.y = 0;
+            inimigo.x = r;
+            inimigo.vy = 0;
+            life = life - 1;
+          }
+        );
+
+        if(life < 0){
+          ctx.clearRect(0,0,eCanvas.width,eCanvas.height);
+          ctx.fillText("You lose",500,250);
+
+        }
+
+    }
 
     addEventListener("keydown", function(e){
       switch (e.keyCode) {
+        case 32:
+            enemy.fire(actor, al, "shot", 0.5);
+            break;
         case 37:
-            actor.ax = -60;
+            actor.ax = -100;
           break;
         case 39:
-            actor.ax = 60;
+            actor.ax = 100;
           break;
         default:
       }
